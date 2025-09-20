@@ -8,7 +8,7 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="w-64 p-4 glass-card mx-4 flex flex-col">
+    <aside className="w-64 p-4 glass-card mx-4 flex flex-col my-2">
       <div className="flex items-center mb-8">
         <h1 className="text-2xl font-bold">Nurse Roster</h1>
       </div>
@@ -18,7 +18,7 @@ export default function Sidebar() {
             {navItems.map((item) => (
               <li key={item.name}>
                 <Link
-                  href={item.href}
+                  href={`/nurse${item.href}`}
                   className="block p-2 rounded-lg hover:bg-white/20"
                 >
                   {item.name}
