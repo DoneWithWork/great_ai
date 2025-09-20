@@ -23,7 +23,7 @@ export default async function Home() {
 
         {userId ? (
           <Link
-            href="/dashboard"
+            href="/nurse/dashboard"
             className="inline-block bg-cyan-500 hover:bg-cyan-600 text-black font-semibold py-4 px-10 rounded-lg shadow-lg transition"
           >
             Go to Dashboard

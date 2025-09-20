@@ -150,10 +150,10 @@ export function NurseOnboardingForm() {
       <p className="text-gray-400 text-sm">All fields are required. </p>
       <button
         type="submit"
-        disabled={form.formState.isSubmitting}
+        disabled={isPending}
         className="w-full bg-gradient-to-r cursor-pointer hover:scale-[101%] duration-300 from-pink-600 to-purple-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors disabled:bg-gray-400"
       >
-        {form.formState.isSubmitting ? "Submitting..." : "Complete Onboarding"}
+        {isPending ? "Submitting..." : "Complete Onboarding"}
       </button>
     </form>
   );

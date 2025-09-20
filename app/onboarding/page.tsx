@@ -1,17 +1,9 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { completeOnboarding } from "../actions/onBoarding";
 import { NurseOnboardingForm } from "@/components/shared/nurse-onboarding-form";
-import { Loader, Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 
-type Props = {
-  searchParams: {
-    state: string;
-    code: string;
-  };
-};
-
-const OnboardingPage = async ({ searchParams }: Props) => {
+const OnboardingPage = async () => {
   const user = await currentUser();
   if ((await auth()).sessionClaims?.metadata.onboardingComplete === true) {
     redirect("/");
@@ -31,7 +23,6 @@ const OnboardingPage = async ({ searchParams }: Props) => {
       <NurseOnboardingForm />
     </div>
   );
-  ``;
 };
 
 export default OnboardingPage;
