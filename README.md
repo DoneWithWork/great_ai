@@ -1,5 +1,18 @@
-# AI Powered Intelligent Nurse Rostering System
+# 🏥 AI Powered Intelligent Nurse Rostering System
 
+**Modern web application for Malaysian healthcare with complete labor law compliance**
+
+---
+
+## 📚 Documentation
+
+- **[🚀 QUICK START](./QUICK_START.md)** - Get running in 30 minutes
+- **[🌐 INTEGRATION GUIDE](./INTEGRATION_GUIDE.md)** - Detailed integration analysis
+- **[⚖️ Malaysian Compliance](../FILE_CLEANUP_RECOMMENDATION.md)** - Labor law requirements
+
+---
+
+## 🏃‍♂️ Quick Setup
 
 ### 1. Clone the Repository
 
