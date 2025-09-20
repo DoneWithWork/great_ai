@@ -32,7 +32,7 @@ export const completeOnboarding = async (prevState: unknown, values: z.infer<typ
             },
         })
         return { message: res.publicMetadata, role: values.role }
-    } catch (err) {
+    } catch {
         return { error: 'There was an error updating the user metadata.' }
     }
 }

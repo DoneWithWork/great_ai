@@ -157,3 +157,100 @@ export const rosterRelations = relations(roster, ({ one }) => ({
         references: [shifts.id],
     }),
 }))
+
+
+// Types inferred from tables
+export type User = {
+    id: string;
+    fullName: string;
+    email: string;
+    role: "nurse" | "admin";
+    bio?: string | null;
+    onBoarded: boolean;
+    preferredShift: "day" | "night" | "flexible";
+    phone?: string | null;
+    department?: string | null;
+    updatedAt: Date;
+    createdAt: Date;
+    deletedAt?: Date | null;
+};
+
+export type Nurse = {
+    id: number;
+    userId: string;
+    dateOfBirth?: Date | null;
+    gender?: "male" | "female" | "other" | null;
+    contactInfo?: string | null;
+    hiredDate?: Date | null;
+    familyStatus: boolean;
+    contractHours: number;
+    active: boolean;
+    updatedAt: Date;
+    createdAt: Date;
+    deletedAt?: Date | null;
+};
+
+export type LeaveRequest = {
+    id: number;
+    nurseId: number;
+    startDate: Date;
+    endDate: Date;
+    leaveType: string;
+    reason?: string | null;
+    approvalStatus: "pending" | "rejected" | "approved";
+    submittedAt: Date;
+    reviewedAt?: Date | null;
+};
+
+export type PublicHoliday = {
+    id: number;
+    date: Date;
+    description?: string | null;
+    region: Array<"selangor" | "pahang" | "kedah" | "johor" | "perak" | "perlis" | "melaka">;
+    createdAt: Date;
+};
+
+export type PatientCategory = {
+    id: number;
+    name: string;
+    description?: string | null;
+    severityLevel: number;
+    nursesRequired: number;
+    patientsSupported: number;
+    updatedAt: Date;
+    createdAt: Date;
+    deletedAt?: Date | null;
+};
+
+export type Patient = {
+    id: number;
+    fullName: string;
+    dateOfBirth?: Date | null;
+    admissionDate: Date;
+    dischargeDate?: Date | null;
+    categoryId: number;
+    updatedAt: Date;
+    createdAt: Date;
+    deletedAt?: Date | null;
+};
+
+export type Shift = {
+    id: number;
+    name: string;
+    startTime: Date;
+    endTime: Date;
+    shiftType: "day" | "night" | "on_call";
+    updatedAt: Date;
+    createdAt: Date;
+    deletedAt?: Date | null;
+};
+
+export type Roster = {
+    id: number;
+    nurseId: number;
+    shiftId: number;
+    date: Date;
+    updatedAt: Date;
+    createdAt: Date;
+    deletedAt?: Date | null;
+};

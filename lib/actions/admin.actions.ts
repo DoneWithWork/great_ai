@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { users, nurse, leaveRequest } from "@/db/schema";
+import { leaveRequest } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function getAdminDashboardData() {
