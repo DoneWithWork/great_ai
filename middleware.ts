@@ -1,50 +1,36 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-const isProtectedRoute = createRouteMatcher([
-  '/dashboard(.*)',
-  '/roster(.*)',
-  '/requests(.*)',
-  '/admin(.*)',
-  '/nurse(.*)', // explicitly protect nurse routes too
-]);
+const isOnboardingRoute = createRouteMatcher(['/onboarding'])
+const isPublicRoute = createRouteMatcher(['/'])
 
-const isAdminRoute = createRouteMatcher([
-  '/admin(.*)',
-]);
+export default clerkMiddleware(async (auth, req: NextRequest) => {
+  const { isAuthenticated, sessionClaims, redirectToSignIn } = await auth()
 
-const isNurseRoute = createRouteMatcher([
-  '/nurse(.*)',
-]);
-
-type SessionClaims = {
-  publicMetadata?: {
-    role?: string;
-    [key: string]: any;
-  };
-  [key: string]: any;
-};
-
-export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    const { sessionClaims } = await auth() as { sessionClaims: SessionClaims };
-
-    const role = sessionClaims?.publicMetadata?.role;
-
-    if (isAdminRoute(req)) {
-      if (role !== 'admin') {
-        return NextResponse.redirect(new URL('/', req.url));
-      }
-    }
-
-    if (isNurseRoute(req)) {
-      if (role !== 'nurse' && role !== 'admin') {
-        return NextResponse.redirect(new URL('/', req.url));
-      }
-    }
+  // For users visiting /onboarding, don't try to redirect
+  if (isAuthenticated && isOnboardingRoute(req)) {
+    return NextResponse.next()
   }
-});
+
+  // If the user isn't signed in and the route is private, redirect to sign-in
+  if (!isAuthenticated && !isPublicRoute(req)) return redirectToSignIn({ returnBackUrl: req.url })
+
+  // Catch users who do not have `onboardingComplete: true` in their publicMetadata
+  // Redirect them to the /onboarding route to complete onboarding
+  if (isAuthenticated && !sessionClaims?.metadata?.onboardingComplete) {
+    const onboardingUrl = new URL('/onboarding', req.url)
+    return NextResponse.redirect(onboardingUrl)
+  }
+
+  // If the user is logged in and the route is protected, let them view.
+  if (isAuthenticated && !isPublicRoute(req)) return NextResponse.next()
+})
 
 export const config = {
-  matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
-};
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
+}

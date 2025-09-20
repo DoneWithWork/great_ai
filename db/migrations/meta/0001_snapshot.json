@@ -1,6 +1,6 @@
 {
-  "id": "98271758-60c8-4c11-a649-e1e1c70accf4",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "f321a309-71a5-49aa-9d59-1a6858b9259c",
+  "prevId": "98271758-60c8-4c11-a649-e1e1c70accf4",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -564,12 +564,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "clerkId": {
-          "name": "clerkId",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "fullName": {
           "name": "fullName",
           "type": "varchar(255)",
@@ -622,13 +616,6 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_clerkId_unique": {
-          "name": "users_clerkId_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "clerkId"
-          ]
-        },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,

@@ -5,8 +5,22 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1758326995931,
-      "tag": "0000_early_supreme_intelligence",
+      "when": 1758330655837,
+      "tag": "0000_powerful_robbie_robertson",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758333751688,
+      "tag": "0001_optimal_moonstone",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758334772550,
+      "tag": "0002_shiny_husk",
       "breakpoints": true
     }
   ]

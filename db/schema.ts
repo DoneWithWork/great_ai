@@ -16,20 +16,25 @@ export const stateEnums = pgEnum("states", [
     "selangor", "pahang", "kedah", "johor", "perak", "perlis", "melaka"
 ])
 const timestamps = {
-    updatedAt: timestamp('updated_at').defaultNow().notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    deletedAt: timestamp('deleted_at'),
+    updatedAt: timestamp().defaultNow().notNull(),
+    createdAt: timestamp().defaultNow().notNull(),
+    deletedAt: timestamp(),
 }
 export const approvalStatus = pgEnum("approval_status", ["pending", "rejected", "approved"])
-export const role = pgEnum("role", ['nurse', 'admin'])
+export const role = pgEnum("role", ["nurse", "admin"])
+export const preferredShift = pgEnum("preferred_shift", ["day", "night", "flexible"])
 
 export const users = pgTable("users", {
-    id: serial().primaryKey(),
-    clerkId: varchar("clerk_id", { length: 255 }).unique().notNull(),
-    fullName: varchar("full_name", { length: 255 }).notNull(),
-    email: varchar("email", { length: 255 }).unique().notNull(),
-    role: role("role").default("nurse"),
-    ...timestamps
+    id: text().primaryKey(),
+    fullName: varchar({ length: 255 }).notNull(),
+    email: varchar({ length: 255 }).unique().notNull(),
+    role: role().default("nurse"),
+    bio: text(),
+    onBoarded: boolean().default(false),
+    preferredShift: preferredShift().default("flexible"),
+    phone: varchar({ length: 15 }),
+    department: varchar({ length: 100 }),
+    ...timestamps,
 })
 
 export const usersRelations = relations(users, ({ one }) => ({
@@ -37,19 +42,19 @@ export const usersRelations = relations(users, ({ one }) => ({
         fields: [users.id],
         references: [nurse.userId],
     }),
-}));
+}))
 
 export const nurse = pgTable("nurse", {
     id: serial().primaryKey(),
-    userId: integer("user_id").references(() => users.id).notNull(),
-    dateOfBirth: timestamp("date_of_birth", { mode: "date" }),
-    gender: genders("gender"),
-    contactInfo: varchar("contact_info", { length: 255 }),
-    hiredDate: timestamp("hired_date", { mode: "date" }),
-    familyStatus: boolean("family_status").default(false),
-    contractHours: integer("contract_hours").default(45),
-    active: boolean("active").default(true),
-    ...timestamps
+    userId: text().references(() => users.id).notNull(),
+    dateOfBirth: timestamp({ mode: "date" }),
+    gender: genders(),
+    contactInfo: varchar({ length: 255 }),
+    hiredDate: timestamp({ mode: "date" }),
+    familyStatus: boolean().default(false),
+    contractHours: integer().default(45),
+    active: boolean().default(true),
+    ...timestamps,
 })
 
 export const nurseRelations = relations(nurse, ({ one, many }) => ({
@@ -59,19 +64,18 @@ export const nurseRelations = relations(nurse, ({ one, many }) => ({
     }),
     leaveRequests: many(leaveRequest),
     rosters: many(roster),
-}));
+}))
 
-
-export const leaveRequest = pgTable("leave_request", {
+export const leaveRequest = pgTable("leaveRequest", {
     id: serial().primaryKey(),
-    nurseId: integer("nurse_id").references(() => nurse.id).notNull(),
-    startDate: timestamp("start_date", { mode: "date" }).notNull(),
-    endDate: timestamp("end_date", { mode: "date" }).notNull(),
-    leaveType: varchar("leave_type", { length: 50 }).notNull(),
-    reason: text("reason"),
-    approvalStatus: approvalStatus("approval_status").default("pending"),
-    submittedAt: timestamp("submitted_at").defaultNow(),
-    reviewedAt: timestamp("reviewed_at")
+    nurseId: integer().references(() => nurse.id).notNull(),
+    startDate: timestamp({ mode: "date" }).notNull(),
+    endDate: timestamp({ mode: "date" }).notNull(),
+    leaveType: varchar({ length: 50 }).notNull(),
+    reason: text(),
+    approvalStatus: approvalStatus().default("pending"),
+    submittedAt: timestamp().defaultNow(),
+    reviewedAt: timestamp(),
 })
 
 export const leaveRequestRelations = relations(leaveRequest, ({ one }) => ({
@@ -79,38 +83,38 @@ export const leaveRequestRelations = relations(leaveRequest, ({ one }) => ({
         fields: [leaveRequest.nurseId],
         references: [nurse.id],
     }),
-}));
+}))
 
-export const publicHolidays = pgTable("public_holidays", {
+export const publicHolidays = pgTable("publicHolidays", {
     id: serial().primaryKey(),
-    date: timestamp("date", { mode: "date" }).notNull(),
-    description: text("description"),
-    region: stateEnums("region").array().notNull(),
-    createdAt: timestamp("created_at").defaultNow()
+    date: timestamp({ mode: "date" }).notNull(),
+    description: text(),
+    region: stateEnums().array().notNull(),
+    createdAt: timestamp().defaultNow(),
 })
 
+export const wardTypes = pgEnum("ward_types", ["ICU", "GENERAL", "POST-OP", "Pediatric", "Maternity"])
 
-export const wardTypes = pgEnum("ward_types", ['ICU', 'GENERAL', 'POST-OP', 'Pediatric', 'Maternity'])
-export const patientCategories = pgTable("patient_categories", {
+export const patientCategories = pgTable("patientCategories", {
     id: serial().primaryKey(),
-    name: varchar("name", { length: 50 }).notNull().unique(),
-    description: text("description"),
-    severityLevel: integer("severity_level").notNull().default(1),
-    nursesRequired: integer("nurses_required").notNull().default(1),
-    patientsSupported: integer("patients_supported").notNull().default(1),
-    ...timestamps
+    name: varchar({ length: 50 }).notNull().unique(),
+    description: text(),
+    severityLevel: integer().notNull().default(1),
+    nursesRequired: integer().notNull().default(1),
+    patientsSupported: integer().notNull().default(1),
+    ...timestamps,
 }, (table) => [
-    check("severityLevel", sql`${table.severityLevel} BETWEEN 1 AND 4`)
+    check("severityLevel", sql`${table.severityLevel} BETWEEN 1 AND 4`),
 ])
 
 export const patient = pgTable("patient", {
     id: serial().primaryKey(),
-    fullName: varchar("full_name", { length: 255 }).notNull(),
-    dateOfBirth: timestamp("date_of_birth", { mode: "date" }),
-    admissionDate: timestamp("admission_date", { mode: "date" }).notNull(),
-    dischargeDate: timestamp("discharge_date", { mode: "date" }),
-    categoryId: integer("category_id").references(() => patientCategories.id).notNull(),
-    ...timestamps
+    fullName: varchar({ length: 255 }).notNull(),
+    dateOfBirth: timestamp({ mode: "date" }),
+    admissionDate: timestamp({ mode: "date" }).notNull(),
+    dischargeDate: timestamp({ mode: "date" }),
+    categoryId: integer().references(() => patientCategories.id).notNull(),
+    ...timestamps,
 })
 
 export const patientRelations = relations(patient, ({ one }) => ({
@@ -118,30 +122,30 @@ export const patientRelations = relations(patient, ({ one }) => ({
         fields: [patient.categoryId],
         references: [patientCategories.id],
     }),
-}));
+}))
 
-export const shiftTypes = pgEnum("shift_types", ["day", "night", "on_call"]);
+export const shiftTypes = pgEnum("shift_types", ["day", "night", "on_call"])
 
 export const shifts = pgTable("shifts", {
     id: serial().primaryKey(),
-    name: varchar("name", { length: 100 }).notNull(),
-    startTime: timestamp("start_time").notNull(),
-    endTime: timestamp("end_time").notNull(),
-    shiftType: shiftTypes("shift_type").notNull(),
-    ...timestamps
-});
+    name: varchar({ length: 100 }).notNull(),
+    startTime: timestamp().notNull(),
+    endTime: timestamp().notNull(),
+    shiftType: shiftTypes().notNull(),
+    ...timestamps,
+})
 
 export const shiftsRelations = relations(shifts, ({ many }) => ({
     rosters: many(roster),
-}));
+}))
 
 export const roster = pgTable("roster", {
     id: serial().primaryKey(),
-    nurseId: integer("nurse_id").references(() => nurse.id).notNull(),
-    shiftId: integer("shift_id").references(() => shifts.id).notNull(),
-    date: timestamp("date", { mode: "date" }).notNull(),
-    ...timestamps
-});
+    nurseId: integer().references(() => nurse.id).notNull(),
+    shiftId: integer().references(() => shifts.id).notNull(),
+    date: timestamp({ mode: "date" }).notNull(),
+    ...timestamps,
+})
 
 export const rosterRelations = relations(roster, ({ one }) => ({
     nurse: one(nurse, {
@@ -152,4 +156,4 @@ export const rosterRelations = relations(roster, ({ one }) => ({
         fields: [roster.shiftId],
         references: [shifts.id],
     }),
-}));
+}))

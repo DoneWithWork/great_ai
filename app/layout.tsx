@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from '@clerk/nextjs'
-import { dark } from '@clerk/themes';
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nurse Rostering AI",
+  title: "RostalQ - Nurse Rostering AI",
   description: "A modern Nurse Rostering application powered by AI",
 };
 
@@ -29,15 +29,15 @@ export default function RootLayout({
       appearance={{
         baseTheme: dark,
         variables: {
-          colorPrimary: '#6b7280',
-          colorBackground: '#1f2937',
-          colorInputBackground: '#374151',
-          colorInputText: '#f9fafb',
+          colorPrimary: "#6b7280",
+          colorBackground: "#1f2937",
+          colorInputBackground: "#374151",
+          colorInputText: "#f9fafb",
         },
         elements: {
-          card: 'glass-card',
-          rootBox: 'glass-card',
-        }
+          card: "glass-card",
+          rootBox: "glass-card",
+        },
       }}
     >
       <html lang="en">

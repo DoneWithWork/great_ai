@@ -8,16 +8,15 @@ import { notFound } from "next/navigation";
 import * as z from "zod";
 
 export async function getCurrentNurseData() {
-  const { userId: clerkId } = auth();
+  const { userId: clerkId } = await auth();
 
   if (!clerkId) {
-    // This should not happen if the user is authenticated, but it's a good practice to check.
     return notFound();
   }
 
   try {
     const user = await db.query.users.findFirst({
-      where: eq(users.clerkId, clerkId),
+      where: eq(users.id, clerkId),
       with: {
         nurse: {
           with: {
@@ -58,7 +57,7 @@ const leaveRequestSchema = z.object({
 });
 
 export async function createLeaveRequest(values: z.infer<typeof leaveRequestSchema>) {
-  const { userId: clerkId } = auth();
+  const { userId: clerkId } = await auth();
 
   if (!clerkId) {
     return { error: "User not authenticated" };
@@ -72,7 +71,7 @@ export async function createLeaveRequest(values: z.infer<typeof leaveRequestSche
 
   try {
     const user = await db.query.users.findFirst({
-      where: eq(users.clerkId, clerkId),
+      where: eq(users.id, clerkId),
       columns: { id: true },
       with: {
         nurse: {
@@ -101,7 +100,7 @@ export async function createLeaveRequest(values: z.infer<typeof leaveRequestSche
 }
 
 export async function getMyLeaveRequests() {
-  const { userId: clerkId } = auth();
+  const { userId: clerkId } = await auth();
 
   if (!clerkId) {
     return notFound();
@@ -109,7 +108,7 @@ export async function getMyLeaveRequests() {
 
   try {
     const user = await db.query.users.findFirst({
-      where: eq(users.clerkId, clerkId),
+      where: eq(users.id, clerkId),
       with: {
         nurse: {
           with: {

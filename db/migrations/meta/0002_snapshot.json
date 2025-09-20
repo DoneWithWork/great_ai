@@ -1,6 +1,6 @@
 {
-  "id": "98271758-60c8-4c11-a649-e1e1c70accf4",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "1000dcbd-5c08-4870-84ba-b1348f23732a",
+  "prevId": "f321a309-71a5-49aa-9d59-1a6858b9259c",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -564,12 +564,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "clerkId": {
-          "name": "clerkId",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "fullName": {
           "name": "fullName",
           "type": "varchar(255)",
@@ -590,12 +584,38 @@
           "notNull": false,
           "default": "'nurse'"
         },
+        "bio": {
+          "name": "bio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "onBoarded": {
           "name": "onBoarded",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "preferredShift": {
+          "name": "preferredShift",
+          "type": "preferred_shift",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'flexible'"
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "department": {
+          "name": "department",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
         },
         "updatedAt": {
           "name": "updatedAt",
@@ -622,13 +642,6 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_clerkId_unique": {
-          "name": "users_clerkId_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "clerkId"
-          ]
-        },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
@@ -659,6 +672,15 @@
         "male",
         "female",
         "other"
+      ]
+    },
+    "public.preferred_shift": {
+      "name": "preferred_shift",
+      "schema": "public",
+      "values": [
+        "day",
+        "night",
+        "flexible"
       ]
     },
     "public.role": {
