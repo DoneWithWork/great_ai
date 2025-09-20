@@ -1,26 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background-start-rgb: 238, 242, 245;
+  --background-end-rgb: 202, 211, 222;
   --foreground: #171717;
-}
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.8);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background-start-rgb: 15, 23, 42;
+    --background-end-rgb: 30, 41, 59;
     --foreground: #ededed;
+
+    --glass-bg: rgba(30, 41, 59, 0.5);
+    --glass-border: rgba(30, 41, 59, 0.8);
   }
 }
 
+@theme {
+  --color-foreground: var(--foreground);
+
+  --card-background: var(--glass-bg);
+  --card-border-color: var(--glass-border);
+
+  --breakpoint-3xl: 1920px;
+}
+
 body {
-  background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  min-height: 100vh;
+}
+
+.glass-card {
+  background-color: var(--card-background);
+  border-radius: 1rem;
+  border: 1px solid var(--card-border-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
