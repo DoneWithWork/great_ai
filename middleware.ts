@@ -20,34 +20,8 @@ export default clerkMiddleware(async (auth, req) => {
     return redirectToSignIn({ returnBackUrl: req.url });
   }
 
-  // If signed in but no onboarding complete → send to onboarding
-  if (
-    isAuthenticated &&
-    !(sessionClaims?.publicMetadata as PublicMetadata)?.onboardingComplete &&
-    !req.url.includes("/onboarding") &&
-    !isPublicRoute(req)
-  ) {
-    return NextResponse.redirect(new URL("/onboarding", req.url));
-  }
 
-  // Role-based redirects after onboarding
-  if (
-    isAuthenticated &&
-    (sessionClaims?.publicMetadata as PublicMetadata)?.onboardingComplete
-  ) {
-    const role = (sessionClaims?.publicMetadata as PublicMetadata)?.role;
 
-    // If on root path, redirect to appropriate dashboard
-    if (req.nextUrl.pathname === "/") {
-      if (role === "admin") {
-        return NextResponse.redirect(new URL("/admin/dashboard", req.url));
-      } else {
-        return NextResponse.redirect(new URL("/nurse/dashboard", req.url));
-      }
-    }
-  }
-
-  return NextResponse.next();
 });
 
 export const config = {

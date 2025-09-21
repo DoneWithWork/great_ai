@@ -77,7 +77,6 @@ export default function Page() {
                 },
               }}
               signInUrl="/sign-in"
-              redirectUrl="/onboarding"
               afterSignUpUrl="/onboarding"
             />
           </div>
