@@ -59,6 +59,7 @@ export const completeOnboarding = async (
       const res = await client.users.updateUser(userId, {
         publicMetadata: {
           onboardingComplete: true,
+          role: values.role,
         },
       });
       return { message: res.publicMetadata, role: values.role };

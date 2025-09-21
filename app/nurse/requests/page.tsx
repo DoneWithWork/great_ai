@@ -45,6 +45,7 @@ export default function RequestsPage() {
       setError(null);
 
       const result = await getUserLeaveRequestAction();
+      console.log(result);
       if ("error" in result) {
         setError(result.error);
       } else {

@@ -16,7 +16,7 @@ const formSchema = z.object({
 export async function sendLeaveRequestAction(prevState: undefined, values: z.infer<typeof formSchema>) {
     const user = await currentUser();
 
-    if (!user || user.publicMetadata?.role !== "nurse") return { error: 'No Logged In User' }
+    if (!user) return { error: 'No Logged In User' }
 
     const theUser = await db.query.users.findFirst({
         where: eq(users.id, user.id),
