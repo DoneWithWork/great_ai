@@ -19,15 +19,24 @@ Output JSON (returned by handler):
   "Monday": {...}, ...
 }
 """
+
 from ortools.sat.python import cp_model
 import json
 from typing import List, Dict
 
 DAYS = list(range(7))
-DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+DAY_NAMES = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+]
 
 # Model choices: day = 8h, night = 12h (allows combos to meet 40-45 & 4-5 shifts)
-SHIFTS = ["day","night"]
+SHIFTS = ["day", "night"]
 SHIFT_HOURS = {"day": 8, "night": 12}
 
 # Hard constraint bounds
@@ -41,14 +50,19 @@ PENALTY_DAYOFF = 100  # large penalty for assigning on preferred day off
 REWARD_PREF_SHIFT = -10  # reward (negative penalty) for assigning preferred shift type
 PENALTY_UNASSIGNED = 200  # penalty if demand cannot be met (slack)
 
+
 def build_and_solve(nurse_profiles: List[Dict], N: int, time_limit: int = 20):
     """
     Build CP model and solve. Returns roster mapping day->shifts->list of nurse_ids.
     """
     # Preprocess nurses
     nurses = [n["nurse_id"] for n in nurse_profiles]
-    pref_days_off = {n["nurse_id"]: set(n.get("preferred_days_off", [])) for n in nurse_profiles}
-    pref_shift = {n["nurse_id"]: int(n.get("preferred_shift_type", 0)) for n in nurse_profiles}
+    pref_days_off = {
+        n["nurse_id"]: set(n.get("preferred_days_off", [])) for n in nurse_profiles
+    }
+    pref_shift = {
+        n["nurse_id"]: int(n.get("preferred_shift_type", 0)) for n in nurse_profiles
+    }
 
     # Demand per day: split N equally between day and night
     night_req = N // 2
@@ -72,7 +86,9 @@ def build_and_solve(nurse_profiles: List[Dict], N: int, time_limit: int = 20):
     # Hard: weekly hours between MIN_WEEK_HOURS and MAX_WEEK_HOURS
     nurse_hours = {}
     for nid in nurses:
-        total_hours_expr = sum(assign[(nid, d, s)] * SHIFT_HOURS[s] for d in DAYS for s in SHIFTS)
+        total_hours_expr = sum(
+            assign[(nid, d, s)] * SHIFT_HOURS[s] for d in DAYS for s in SHIFTS
+        )
         # integer variable to track hours
         hvar = model.NewIntVar(0, MAX_WEEK_HOURS, f"hours_{nid}")
         model.Add(hvar == total_hours_expr)
@@ -143,7 +159,10 @@ def build_and_solve(nurse_profiles: List[Dict], N: int, time_limit: int = 20):
     status = solver.Solve(model)
 
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-        return {"error": "No feasible solution found", "status": solver.StatusName(status)}
+        return {
+            "error": "No feasible solution found",
+            "status": solver.StatusName(status),
+        }
 
     # Build roster output: day_name -> {day_shift: [...], night_shift: [...]}
     roster = {DAY_NAMES[d]: {"day_shift": [], "night_shift": []} for d in DAYS}
@@ -164,8 +183,9 @@ def build_and_solve(nurse_profiles: List[Dict], N: int, time_limit: int = 20):
         "nurse_hours": nurse_hours_out,
         "slack": slack_out,
         "objective": solver.ObjectiveValue(),
-        "status": solver.StatusName(status)
+        "status": solver.StatusName(status),
     }
+
 
 # AWS Lambda handler
 def lambda_handler(event, context):
@@ -179,9 +199,17 @@ def lambda_handler(event, context):
     If event is empty or missing keys, run a built-in example.
     """
     try:
-        nurse_profiles = event.get("nurse_profiles") if event and isinstance(event, dict) else None
-        N = int(event.get("N")) if event and isinstance(event, dict) and event.get("N") is not None else None
-        time_limit = int(event.get("max_seconds")) if event and event.get("max_seconds") else 20
+        nurse_profiles = (
+            event.get("nurse_profiles") if event and isinstance(event, dict) else None
+        )
+        N = (
+            int(event.get("N"))
+            if event and isinstance(event, dict) and event.get("N") is not None
+            else None
+        )
+        time_limit = (
+            int(event.get("max_seconds")) if event and event.get("max_seconds") else 20
+        )
     except Exception as e:
         return {"error": f"Invalid event format: {e}"}
 
@@ -189,11 +217,31 @@ def lambda_handler(event, context):
     if not nurse_profiles or N is None:
         # small example: 5 nurses, N=4 (2 per shift)
         nurse_profiles = [
-            {"nurse_id": "n001", "preferred_days_off": [0,6], "preferred_shift_type": 0},
-            {"nurse_id": "n002", "preferred_days_off": [1,2], "preferred_shift_type": 0},
-            {"nurse_id": "n003", "preferred_days_off": [3,4], "preferred_shift_type": 1},
-            {"nurse_id": "n004", "preferred_days_off": [5,6], "preferred_shift_type": 1},
-            {"nurse_id": "n005", "preferred_days_off": [2,3], "preferred_shift_type": 0}
+            {
+                "nurse_id": "n001",
+                "preferred_days_off": [0, 6],
+                "preferred_shift_type": 0,
+            },
+            {
+                "nurse_id": "n002",
+                "preferred_days_off": [1, 2],
+                "preferred_shift_type": 0,
+            },
+            {
+                "nurse_id": "n003",
+                "preferred_days_off": [3, 4],
+                "preferred_shift_type": 1,
+            },
+            {
+                "nurse_id": "n004",
+                "preferred_days_off": [5, 6],
+                "preferred_shift_type": 1,
+            },
+            {
+                "nurse_id": "n005",
+                "preferred_days_off": [2, 3],
+                "preferred_shift_type": 0,
+            },
         ]
         N = 4
         time_limit = 10
@@ -203,6 +251,7 @@ def lambda_handler(event, context):
     print(json.dumps(result, indent=2))
     # Return JSON
     return result
+
 
 # For local testing
 if __name__ == "__main__":
