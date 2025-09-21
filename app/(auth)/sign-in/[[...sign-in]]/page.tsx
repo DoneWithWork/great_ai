@@ -3,7 +3,7 @@ import { SignIn } from "@clerk/nextjs";
 export default function Page() {
   return (
     <div
-      className="flex justify-center items-center h-screen bg-white"
+      className="flex justify-center items-center h-screen bg-gray-50"
       style={{ minHeight: "100vh" }}
     >
       <div className="w-full max-w-md">
@@ -66,7 +66,7 @@ export default function Page() {
                   },
                   headerSubtitle: {
                     fontSize: "0.875rem",
-                    color: "#a6aab1ff",
+                    color: "#6b7280",
                     textAlign: "center",
                     marginBottom: "1.5rem",
                   },
