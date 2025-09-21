@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { UserButton } from "@clerk/nextjs";
 import { Dispatch, SetStateAction } from "react";
 
 const navItems = [
@@ -40,6 +41,21 @@ export default function Sidebar({
               ))}
             </ul>
           </nav>
+
+          {/* User profile and logout section */}
+          <div className="mt-auto pt-4 border-t border-white/20">
+            <div className="flex items-center gap-3 p-2">
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "h-10 w-10",
+                    userButtonPopoverFooter: "hidden",
+                  },
+                }}
+              />
+              <span className="text-sm text-white/80">Profile & Settings</span>
+            </div>
+          </div>
         </div>
       </aside>
     </div>
