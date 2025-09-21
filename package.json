@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.893.0",
+    "@aws-sdk/client-lambda": "^3.893.0",
     "@aws-sdk/client-sagemaker-runtime": "^3.893.0",
     "@clerk/nextjs": "^6.32.0",
     "@clerk/themes": "^2.4.19",

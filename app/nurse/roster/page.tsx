@@ -1,47 +1,50 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, momentLocalizer, Event } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import Link from "next/link";
+import { DeepARInput } from "@/types/types";
+import { getRosterAction } from "@/app/actions/getRoster";
 
 const localizer = momentLocalizer(moment);
 
-const mockRoster: Event[] = [
-  {
-    title: "John Doe - Morning",
-    start: new Date(2025, 8, 21, 8, 0),
-    end: new Date(2025, 8, 21, 20, 0),
-  },
-  {
-    title: "Jane Smith - Night",
-    start: new Date(2025, 8, 22, 20, 0),
-    end: new Date(2025, 8, 23, 8, 0),
-  },
-  {
-    title: "Carlos Ruiz - Evening",
-    start: new Date(2025, 8, 23, 14, 0),
-    end: new Date(2025, 8, 23, 22, 0),
-  },
-  {
-    title: "Aisha Khan - Morning",
-    start: new Date(2025, 8, 24, 8, 0),
-    end: new Date(2025, 8, 24, 20, 0),
-  },
-];
-
 export default function RosterPage() {
-  const [events] = useState(mockRoster);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  async function fetchRoster() {
+    // Example DeepAR input
+    setLoading(true);
+    const input: DeepARInput = {
+      instances: [
+        { start: "2025-09-21T00:00:00", target: [10, 12, 15, 17, 20] },
+      ],
+      configuration: {
+        num_samples: 100,
+        output_types: ["mean"],
+        quantiles: ["0.1", "0.5", "0.9"],
+      },
+    };
+
+    const roster = await getRosterAction(input);
+    if (roster && typeof roster === "object" && !Array.isArray(roster)) {
+      setEvents(transformRosterToEvents(roster as Roster));
+    }
+    setLoading(false);
+  }
 
   const eventStyleGetter = (event: Event) => {
-    let backgroundColor = "#0ea5e9"; // cyan
+    let backgroundColor = "#0ea5e9"; // default
+
     if (typeof event.title === "string") {
-      if (event.title.toLowerCase().includes("night"))
-        backgroundColor = "#8b5cf6";
-      else if (event.title.toLowerCase().includes("evening"))
-        backgroundColor = "#facc15";
+      const nurseId = event.title.split(" - ")[0]; // get n001
+      let hash = 0;
+      for (let i = 0; i < nurseId.length; i++) {
+        hash = nurseId.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      backgroundColor = `hsl(${hash % 360}, 60%, 50%)`; // pastel-like unique colour
     }
+
     return {
       style: {
         backgroundColor,
@@ -59,68 +62,129 @@ export default function RosterPage() {
 
   return (
     <main className="min-h-screen bg-[#0f172a] text-gray-100 p-2 md:p-4">
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
         <h1 className="text-4xl font-bold mb-4 md:mb-0 text-cyan-400">
           Weekly Roster
         </h1>
-        <Link
-          href="/nurse/dashboard"
-          className="bg-[#1e3a8a] hover:bg-[#1e40af] text-cyan-200 font-bold py-3 px-6 rounded-xl shadow-lg transition transform hover:scale-105"
-        >
-          Back to Dashboard
-        </Link>
       </div>
-      {/* Weekly Calendar */}
+      <button
+        onClick={fetchRoster}
+        className={`px-6 py-3 font-semibold rounded-xl transition-colors my-3 ${
+          loading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+        } text-white flex items-center justify-center gap-2`}
+        disabled={loading}
+      >
+        {loading ? (
+          <>
+            <svg
+              className="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8H4z"
+              ></path>
+            </svg>
+            Generating...
+          </>
+        ) : (
+          "Generate Roster"
+        )}
+      </button>
       <section className="bg-[#1e293b] rounded-3xl p-6 shadow-lg mb-12">
-        <h2 className="text-2xl font-bold mb-4 text-cyan-300">
-          {"This Weeks Shifts"}
-        </h2>
-        <div className="react-big-calendar dark-calendar">
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            defaultView="week"
-            views={["week"]}
-            step={60}
-            timeslots={1}
-            style={{ height: 600 }}
-            eventPropGetter={eventStyleGetter}
-            onSelectEvent={(event) => handleAddToGoogleCalendar(event)}
-            min={new Date(2025, 8, 21, 0, 0)} // 24h
-            max={new Date(2025, 8, 21, 23, 59)}
-          />
-        </div>
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          defaultView="week"
+          views={["week"]}
+          step={60}
+          timeslots={1}
+          style={{ height: 600 }}
+          eventPropGetter={eventStyleGetter}
+          onSelectEvent={(event) => handleAddToGoogleCalendar(event)}
+        />
       </section>
-      {/* Past Week Table
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-6 text-cyan-300">Past Weeks</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-[#1e293b] rounded-2xl overflow-hidden">
-            <thead>
-              <tr className="text-left text-gray-400 uppercase border-b border-[#334155]">
-                <th className="px-6 py-3">Week</th>
-                <th className="px-6 py-3">Total Shifts</th>
-                <th className="px-6 py-3">Critical Shifts</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-[#334155] transition">
-                <td className="px-6 py-4">2025-09-14 → 2025-09-20</td>
-                <td className="px-6 py-4">12</td>
-                <td className="px-6 py-4 text-red-400 font-bold">3</td>
-              </tr>
-              <tr className="hover:bg-[#334155] transition">
-                <td className="px-6 py-4">2025-09-07 → 2025-09-13</td>
-                <td className="px-6 py-4">14</td>
-                <td className="px-6 py-4 text-red-400 font-bold">2</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section> */}
     </main>
   );
+}
+type Roster = {
+  [day: string]: {
+    day_shift: string[];
+    night_shift: string[];
+  };
+};
+
+function transformRosterToEvents(roster: Roster): Event[] {
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const events: Event[] = [];
+
+  // Reference Sunday at 00:00:00
+  const today = new Date();
+  const referenceSunday = new Date(today);
+  referenceSunday.setDate(today.getDate() - today.getDay());
+  referenceSunday.setHours(0, 0, 0, 0);
+
+  for (let i = 0; i < daysOfWeek.length; i++) {
+    const dayName = daysOfWeek[i];
+    const dayShifts = roster[dayName];
+    if (!dayShifts) continue;
+
+    // Day shift: 12 AM - 12 PM
+    dayShifts.day_shift.forEach((nurseId) => {
+      const start = new Date(referenceSunday);
+      start.setDate(referenceSunday.getDate() + i);
+      start.setHours(0, 0, 0, 0); // 12 AM
+
+      const end = new Date(start);
+      end.setHours(23, 59, 0, 0); // 11:59 PM same day
+
+      events.push({
+        title: `${nurseId} - Day`,
+        start,
+        end,
+      });
+    });
+
+    // Night shift: 12 PM - 12 AM
+    dayShifts.night_shift.forEach((nurseId) => {
+      const start = new Date(referenceSunday);
+      start.setDate(referenceSunday.getDate() + i);
+      start.setHours(12, 0, 0, 0); // 12 PM
+
+      const end = new Date(start);
+      end.setDate(end.getDate() + 1); // next day
+      end.setHours(0, 0, 0, 0); // 12 AM next day
+
+      events.push({
+        title: `${nurseId} - Night`,
+        start,
+        end,
+      });
+    });
+  }
+
+  return events;
 }
