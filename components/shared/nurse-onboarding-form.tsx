@@ -1,13 +1,12 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useRouter } from "next/navigation";
 import { completeOnboarding } from "@/app/actions/onBoarding";
-import { useTransition } from "react";
 import { formSchema } from "@/lib/schemas";
-import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 export function NurseOnboardingForm() {
   const [isPending, startTransition] = useTransition();
@@ -25,25 +24,21 @@ export function NurseOnboardingForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    startTransition(async () => {
-      const result = await completeOnboarding(values, values);
-
-      if (result?.error) {
-        console.error(result.error);
-        toast.error(result.error);
-      } else {
-        toast.success("Onboarding complete!");
-        const role = result.role;
-
-        setTimeout(() => {
-          if (role === "admin") {
-            router.push("/admin");
-          } else {
-            router.push("/nurse/dashboard");
-          }
-        }, 500);
-      }
-    });
+    try {
+      startTransition(async () => {
+        await completeOnboarding(values, values);
+        if (typeof window !== "undefined") {
+          window.location.href = "/nurse/dashboard";
+        }
+        if (values.role === "nurse") {
+          router.push("/nurse/dashboard");
+        } else {
+          router.push("/admin");
+        }
+      });
+    } catch (err) {
+      console.error("Onboarding failed", err);
+    }
   }
 
   return (

@@ -31,9 +31,7 @@ export const users = pgTable("users", {
     role: role().default("nurse"),
     bio: text(),
     onBoarded: boolean().default(false),
-    preferredShift: preferredShift().default("flexible"),
     phone: varchar({ length: 15 }),
-    department: varchar({ length: 100 }),
     ...timestamps,
 })
 
@@ -47,15 +45,15 @@ export const usersRelations = relations(users, ({ one }) => ({
 export const nurse = pgTable("nurse", {
     id: serial().primaryKey(),
     userId: text().references(() => users.id).notNull(),
-    dateOfBirth: timestamp({ mode: "date" }),
-    gender: genders(),
-    contactInfo: varchar({ length: 255 }),
-    hiredDate: timestamp({ mode: "date" }),
-    familyStatus: boolean().default(false),
+    preferredShift: preferredShift().default("flexible"),
+    department: varchar({ length: 100 }),
     contractHours: integer().default(45),
     active: boolean().default(true),
+    dayOffs: integer().array().default([]),
     ...timestamps,
-})
+}, (table) => [
+    check("dayOffs_length", sql`array_length(${table.dayOffs}, 1) = 2`),
+])
 
 export const nurseRelations = relations(nurse, ({ one, many }) => ({
     user: one(users, {

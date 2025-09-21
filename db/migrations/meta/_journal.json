@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1758330655837,
-      "tag": "0000_powerful_robbie_robertson",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1758333751688,
-      "tag": "0001_optimal_moonstone",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1758334772550,
-      "tag": "0002_shiny_husk",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1758381374579,
-      "tag": "0003_colorful_black_widow",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1758424628920,
-      "tag": "0004_dashing_gravity",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1758425071091,
-      "tag": "0005_tiresome_master_chief",
+      "when": 1758444698394,
+      "tag": "0000_curly_revanche",
       "breakpoints": true
     }
   ]

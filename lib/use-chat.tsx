@@ -1,6 +1,5 @@
 "use client";
 import { getChatHistory } from "@/app/actions/getChat";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useChatContext } from "./chatprovider";
 

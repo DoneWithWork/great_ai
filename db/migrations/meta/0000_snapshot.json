@@ -1,9 +1,74 @@
 {
-  "id": "98271758-60c8-4c11-a649-e1e1c70accf4",
+  "id": "829774fa-1ec0-4412-8a33-1cc85a8a38ec",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.chat": {
+      "name": "chat",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "chat_userId_users_id_fk": {
+          "name": "chat_userId_users_id_fk",
+          "tableFrom": "chat",
+          "tableTo": "users",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.leaveRequest": {
       "name": "leaveRequest",
       "schema": "",
@@ -88,6 +153,97 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.message": {
+      "name": "message",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chatId": {
+          "name": "chatId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isAssistant": {
+          "name": "isAssistant",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "message_chatId_chat_id_fk": {
+          "name": "message_chatId_chat_id_fk",
+          "tableFrom": "message",
+          "tableTo": "chat",
+          "columnsFrom": [
+            "chatId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "message_userId_users_id_fk": {
+          "name": "message_userId_users_id_fk",
+          "tableFrom": "message",
+          "tableTo": "users",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.nurse": {
       "name": "nurse",
       "schema": "",
@@ -104,37 +260,19 @@
           "primaryKey": false,
           "notNull": true
         },
-        "dateOfBirth": {
-          "name": "dateOfBirth",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "gender": {
-          "name": "gender",
-          "type": "genders",
+        "preferredShift": {
+          "name": "preferredShift",
+          "type": "preferred_shift",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
-        },
-        "contactInfo": {
-          "name": "contactInfo",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "hiredDate": {
-          "name": "hiredDate",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "familyStatus": {
-          "name": "familyStatus",
-          "type": "boolean",
-          "primaryKey": false,
           "notNull": false,
-          "default": false
+          "default": "'flexible'"
+        },
+        "department": {
+          "name": "department",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
         },
         "contractHours": {
           "name": "contractHours",
@@ -149,6 +287,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": true
+        },
+        "dayOffs": {
+          "name": "dayOffs",
+          "type": "integer[]",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'"
         },
         "updatedAt": {
           "name": "updatedAt",
@@ -190,7 +335,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "dayOffs_length": {
+          "name": "dayOffs_length",
+          "value": "array_length(\"nurse\".\"dayOffs\", 1) = 2"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.patient": {
@@ -564,12 +714,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "clerkId": {
-          "name": "clerkId",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "fullName": {
           "name": "fullName",
           "type": "varchar(255)",
@@ -590,12 +734,24 @@
           "notNull": false,
           "default": "'nurse'"
         },
+        "bio": {
+          "name": "bio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "onBoarded": {
           "name": "onBoarded",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": false
         },
         "updatedAt": {
           "name": "updatedAt",
@@ -622,13 +778,6 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_clerkId_unique": {
-          "name": "users_clerkId_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "clerkId"
-          ]
-        },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
@@ -659,6 +808,15 @@
         "male",
         "female",
         "other"
+      ]
+    },
+    "public.preferred_shift": {
+      "name": "preferred_shift",
+      "schema": "public",
+      "values": [
+        "day",
+        "night",
+        "flexible"
       ]
     },
     "public.role": {

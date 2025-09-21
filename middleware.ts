@@ -1,7 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
-const isOnboardingRoute = createRouteMatcher(['/onboarding'])
 const isPublicRoute = createRouteMatcher(['/', '/sign-in(.*)?', '/sign-up(.*)?'])
 
 export default clerkMiddleware(async (auth, req) => {
@@ -12,15 +11,7 @@ export default clerkMiddleware(async (auth, req) => {
     return redirectToSignIn({ returnBackUrl: req.url })
   }
 
-  // If onboarding not complete → force onboarding route
-  if (
-    isAuthenticated &&
-    !sessionClaims?.metadata?.onboardingComplete &&
-    !isOnboardingRoute(req)
-  ) {
-    const onboardingUrl = new URL('/onboarding', req.url)
-    return NextResponse.redirect(onboardingUrl)
-  }
+
 
   return NextResponse.next()
 })
