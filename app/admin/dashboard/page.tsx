@@ -1,55 +1,40 @@
-import { getAdminDashboardData } from "@/lib/actions/admin.actions";
+"use client";
+import { getRosterAction } from "@/app/actions/getRoster";
+import { DeepARInput } from "@/types/types";
+import { useTransition } from "react";
 
-// A component to display pending leave requests
-// function PendingLeaveRequests({ requests }: { requests: LeaveRequest[] }) {
-//   return (
-//     <div className="glass-card p-6">
-//       <h2 className="text-xl font-bold mb-4">Pending Leave Requests</h2>
-//       {requests.length > 0 ? (
-//         <ul>
-//           {requests.map((request) => (
-//             <li key={request.id} className="mb-2 p-2 rounded-lg bg-white/10">
-//               <p>
-//                 <strong>Nurse:</strong> {request.nurse.user.fullName}
-//               </p>
-//               <p>
-//                 <strong>Dates:</strong>{" "}
-//                 {new Date(request.startDate).toLocaleDateString()} -{" "}
-//                 {new Date(request.endDate).toLocaleDateString()}
-//               </p>
-//               <p>
-//                 <strong>Type:</strong> {request.leaveType}
-//               </p>
-//               <div className="flex gap-2 mt-2">
-//                 <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded-lg text-xs transition-colors">
-//                   Approve
-//                 </button>
-//                 <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg text-xs transition-colors">
-//                   Reject
-//                 </button>
-//               </div>
-//             </li>
-//           ))}
-//         </ul>
-//       ) : (
-//         <p>No pending leave requests.</p>
-//       )}
-//     </div>
-//   );
-// }
+export default function AdminDashboardPage() {
+  const [isPending, startTransition] = useTransition();
 
-export default async function AdminDashboardPage() {
-  const { error } = await getAdminDashboardData();
-
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
+  async function getRoster() {
+    const userInput: DeepARInput = {
+      instances: [
+        {
+          start: "2024-01-01T00:00:00",
+          target: [10, 12, 15, 17, 20, 22, 25, 27],
+        },
+      ],
+      configuration: {
+        num_samples: 100,
+        output_types: ["mean", "quantiles"],
+        quantiles: ["0.1", "0.5", "0.9"],
+      },
+    };
+    startTransition(async () => {
+      let N = await getRosterAction(userInput);
+      N = N ? Math.ceil(N) : null;
+    });
   }
-
   return (
     <div>
       <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
       <p className="text-lg mb-8">Overview of nurses and pending requests.</p>
-
+      <button
+        onClick={getRoster}
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >
+        {isPending ? "Loading..." : "Generating roster"}
+      </button>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8"></div>
     </div>
   );

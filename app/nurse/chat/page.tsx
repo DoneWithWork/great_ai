@@ -15,7 +15,7 @@ export default function ChatPage({
 
   // Get active conversation ID from URL
   const activeConversationId = pathname.split("/").pop() || null;
-  const { messages, sendMessage, loading, gettingChatHistory } =
+  const { messages, sendMessage, loading, gettingChatHistory, setMessages } =
     useChat(conversationId);
 
   const handleSelectConversation = (conversationId: string) => {
@@ -43,7 +43,10 @@ export default function ChatPage({
           <h2 className="text-xl font-bold mb-4">Conversations</h2>
 
           <button
-            onClick={() => router.push("/nurse/chat")}
+            onClick={() => {
+              setMessages([]);
+              router.push("/nurse/chat");
+            }}
             className="mb-4 py-2 px-3 cursor-pointer bg-white/30 rbackdrop-blur rounded-lg hover:bg-white/40 transition"
           >
             + New Chat

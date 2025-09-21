@@ -32,7 +32,7 @@ export default function MainLayout({
             <SidebarOpen size={20} className="size-5" />
           )}
         </button>
-        <main className="flex-1 flex flex-col p-2 sm:p-6 md:p-8 overflow-y-hidden">
+        <main className="flex-1 flex flex-col p-2 sm:p-6 md:p-8 overflow-y-scroll">
           <ChatProvider> {children}</ChatProvider>
         </main>
       </div>

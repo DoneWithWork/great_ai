@@ -38,7 +38,7 @@ export const completeOnboarding = async (prevState: unknown, values: z.infer<typ
     const res = await client.users.updateUser(userId, {
         publicMetadata: {
             onboardingComplete: true,
-
+            role: newUser[0].role,
         },
     })
     return { message: 'Onboarding complete', role: newUser[0].role }

@@ -28,12 +28,11 @@ export function NurseOnboardingForm() {
       startTransition(async () => {
         await completeOnboarding(values, values);
         if (typeof window !== "undefined") {
-          window.location.href = "/nurse/dashboard";
-        }
-        if (values.role === "nurse") {
-          router.push("/nurse/dashboard");
-        } else {
-          router.push("/admin");
+          if (values.role === "nurse") {
+            window.location.href = "/nurse/dashboard";
+          } else {
+            window.location.href = "/admin";
+          }
         }
       });
     } catch (err) {

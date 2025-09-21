@@ -136,5 +136,6 @@ export function useChat(conversationId?: string) {
     gettingChatHistory,
     setGettingChatHistory,
     replacement,
+    setMessages,
   };
 }
