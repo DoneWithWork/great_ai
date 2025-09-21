@@ -168,7 +168,7 @@ export const chat = pgTable("chat", {
 })
 export const message = pgTable("message", {
     id: serial().primaryKey(),
-    chatId: integer().references(() => chat.id).notNull(),
+    chatId: integer().references(() => chat.id, { onDelete: 'cascade' }).notNull(),
     userId: text().references(() => users.id).notNull(),
     isAssistant: boolean().default(false).notNull(),
     content: text().notNull(),
@@ -178,6 +178,7 @@ export const messageRelations = relations(message, ({ one }) => ({
     chat: one(chat, {
         fields: [message.chatId],
         references: [chat.id],
+
     }),
     user: one(users, {
         fields: [message.userId],

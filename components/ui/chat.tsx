@@ -1,10 +1,11 @@
 "use client";
+import { useChat } from "@/lib/use-chat";
+import { useUser } from "@clerk/nextjs";
+import { motion } from "framer-motion";
 import { Bandage, Computer, Loader2 } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
-import { motion } from "framer-motion";
-import { useUser } from "@clerk/nextjs";
-import { usePathname } from "next/navigation";
 
 type Props = {
   messages: { role: string; content: string }[];
@@ -20,6 +21,7 @@ export default function ChatArea({
   const user = useUser();
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const pathname = usePathname();
+  const { replacement } = useChat();
   useEffect(() => {
     if (!gettingChatHistory) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -27,7 +29,8 @@ export default function ChatArea({
   }, [messages, gettingChatHistory]);
   useEffect(() => {
     console.log("gettingChatHistory changed: ", gettingChatHistory);
-  }, [gettingChatHistory]);
+    console.log(replacement.current, gettingChatHistory);
+  }, [gettingChatHistory, replacement]);
   return (
     <div className="flex-1 flex flex-col relative bg-blue-400/30 backdrop-blur-lg rounded-xl p-4 shadow-lg">
       {/* Messages */}

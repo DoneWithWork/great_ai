@@ -11,6 +11,6 @@ export async function GET() {
         where: eq(chat.userId, user.id),
 
     });
-    if (!convos) return [];
+    if (!convos) return NextResponse.json([]);
     return NextResponse.json(convos);
 }

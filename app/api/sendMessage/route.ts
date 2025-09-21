@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    let previousMessages: Message[] = [];
+    // let previousMessages: Message[] = [];
     let chatId: number;
 
     if (!conversationId) {

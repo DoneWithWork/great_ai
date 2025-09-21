@@ -15,5 +15,6 @@ export async function getChatHistory(conversationId: string) {
         }
     });
     if (!convo) return [];
+    console.log(convo.messages)
     return convo.messages;
 }
