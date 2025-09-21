@@ -47,7 +47,7 @@ export function NurseOnboardingForm() {
     >
       <div className="">
         <label htmlFor="fullName" className="block text-sm font-medium mb-1 ">
-          Full Name
+          Full Name <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -78,7 +78,7 @@ export function NurseOnboardingForm() {
       </div>
       <div>
         <label htmlFor="phone" className="block text-sm font-medium mb-1">
-          Phone Number
+          Phone Number <span className="text-red-500">*</span>
         </label>
         <input
           type="tel"
@@ -95,7 +95,7 @@ export function NurseOnboardingForm() {
 
       <div>
         <label htmlFor="department" className="block text-sm font-medium mb-1">
-          Department / Ward
+          Department / Ward <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -112,15 +112,20 @@ export function NurseOnboardingForm() {
 
       <div>
         <label htmlFor="role" className="block text-sm font-medium mb-1">
-          Role
+          Role <span className="text-red-500">*</span>
         </label>
         <select
           id="role"
           {...form.register("role")}
-          className="w-full p-2 rounded-lg bg-white/20 border border-transparent focus:border-pink-500 focus:ring-pink-500"
+          className="w-full p-2 rounded-lg bg-white/20 border border-transparent focus:border-pink-500 focus:ring-pink-500 text-white"
+          style={{ color: "white" }}
         >
-          <option value="nurse">Nurse</option>
-          <option value="admin">Admin</option>
+          <option value="nurse" className="bg-gray-800 text-white">
+            Nurse
+          </option>
+          <option value="admin" className="bg-gray-800 text-white">
+            Admin
+          </option>
         </select>
       </div>
       <div>
@@ -128,20 +133,29 @@ export function NurseOnboardingForm() {
           htmlFor="preferredShift"
           className="block text-sm font-medium mb-1"
         >
-          Preferred Shift
+          Preferred Shift <span className="text-red-500">*</span>
         </label>
         <select
           id="preferredShift"
           {...form.register("preferredShift")}
-          className="w-full p-2 rounded-lg bg-white/20 border border-transparent focus:border-pink-500 focus:ring-pink-500"
+          className="w-full p-2 rounded-lg bg-white/20 border border-transparent focus:border-pink-500 focus:ring-pink-500 text-white"
+          style={{ color: "white" }}
         >
-          <option value="day">Day Shift</option>
-          <option value="night">Night Shift</option>
-          <option value="flexible">Flexible</option>
+          <option value="day" className="bg-gray-800 text-white">
+            Day Shift
+          </option>
+          <option value="night" className="bg-gray-800 text-white">
+            Night Shift
+          </option>
+          <option value="flexible" className="bg-gray-800 text-white">
+            Flexible
+          </option>
         </select>
       </div>
 
-      <p className="text-gray-400 text-sm">All fields are required. </p>
+      <p className="text-gray-400 text-sm">
+        Fields marked with <span className="text-red-500">*</span> are required.
+      </p>
       <button
         type="submit"
         disabled={isPending}

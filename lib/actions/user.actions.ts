@@ -29,7 +29,9 @@ export async function getCurrentNurseData() {
             },
             leaveRequests: {
               limit: 5,
-              orderBy: (leaveRequest, { desc }) => [desc(leaveRequest.submittedAt)],
+              orderBy: (leaveRequest, { desc }) => [
+                desc(leaveRequest.submittedAt),
+              ],
             },
           },
         },
@@ -40,7 +42,10 @@ export async function getCurrentNurseData() {
       return notFound();
     }
 
-    return { nurse: user.nurse, user: { fullName: user.fullName, email: user.email } };
+    return {
+      nurse: user.nurse,
+      user: { fullName: user.fullName, email: user.email },
+    };
   } catch (error) {
     console.error("Error fetching nurse data:", error);
     // In a real application, you would want to handle this error more gracefully.
@@ -56,7 +61,9 @@ const leaveRequestSchema = z.object({
   reason: z.string().optional(),
 });
 
-export async function createLeaveRequest(values: z.infer<typeof leaveRequestSchema>) {
+export async function createLeaveRequest(
+  values: z.infer<typeof leaveRequestSchema>
+) {
   const { userId: clerkId } = await auth();
 
   if (!clerkId) {
@@ -75,9 +82,9 @@ export async function createLeaveRequest(values: z.infer<typeof leaveRequestSche
       columns: { id: true },
       with: {
         nurse: {
-          columns: { id: true }
-        }
-      }
+          columns: { id: true },
+        },
+      },
     });
 
     if (!user || !user.nurse) {
@@ -113,20 +120,28 @@ export async function getMyLeaveRequests() {
         nurse: {
           with: {
             leaveRequests: {
-              orderBy: (leaveRequest, { desc }) => [desc(leaveRequest.submittedAt)],
+              orderBy: (leaveRequest, { desc }) => [
+                desc(leaveRequest.submittedAt),
+              ],
             },
           },
         },
       },
     });
 
-    if (!user || !user.nurse) {
-      return notFound();
+    if (!user) {
+      console.error("User not found for clerkId:", clerkId);
+      return { error: "User not found" };
+    }
+
+    if (!user.nurse) {
+      console.error("Nurse record not found for user:", user.id);
+      return { requests: [] }; // Return empty array instead of throwing error
     }
 
     return { requests: user.nurse.leaveRequests };
   } catch (error) {
     console.error("Error fetching leave requests:", error);
-    return notFound();
+    return { error: "Failed to fetch leave requests" };
   }
 }
