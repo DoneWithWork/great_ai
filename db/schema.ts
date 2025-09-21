@@ -159,6 +159,41 @@ export const rosterRelations = relations(roster, ({ one }) => ({
 }))
 
 
+
+export const chat = pgTable("chat", {
+    id: serial().primaryKey(),
+    userId: text().references(() => users.id, { onDelete: "cascade" }).notNull(),
+    title: text(),
+    ...timestamps
+})
+export const message = pgTable("message", {
+    id: serial().primaryKey(),
+    chatId: integer().references(() => chat.id).notNull(),
+    userId: text().references(() => users.id).notNull(),
+    isAssistant: boolean().default(false).notNull(),
+    content: text().notNull(),
+    ...timestamps
+})
+export const messageRelations = relations(message, ({ one }) => ({
+    chat: one(chat, {
+        fields: [message.chatId],
+        references: [chat.id],
+    }),
+    user: one(users, {
+        fields: [message.userId],
+        references: [users.id],
+    }),
+}));
+
+export const chatRelations = relations(chat, ({ one, many }) => ({
+    messages: many(message),
+    user: one(users, {
+        fields: [chat.userId],
+        references: [users.id],
+    }),
+}))
+
+
 // Types inferred from tables
 export type User = {
     id: string;
@@ -254,3 +289,5 @@ export type Roster = {
     createdAt: Date;
     deletedAt?: Date | null;
 };
+
+

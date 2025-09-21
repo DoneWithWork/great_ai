@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --background-start-rgb: 238, 242, 245;
@@ -50,4 +51,49 @@ body {
 .cl-avatarBox {
   width: 2.3rem;
   height: 2.3rem;
+}
+  @keyframes borderAnim {
+      0% {
+        border-color: rgba(59, 130, 246, 0.2);
+      }
+      50% {
+        border-color: rgba(59, 130, 246, 1);
+      }
+      100% {
+        border-color: rgba(59, 130, 246, 0.2);
+      }
+    }
+    .animate-border {
+      animation: borderAnim 2s linear infinite;
+    }
+
+
+
+    /* Smooth, minimal scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* or use rgba(255,255,255,0.05) for a soft hint */
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #60a5fa, #3b82f6); /* Tailwind blue-400 → blue-600 */
+  border-radius: 9999px;
+  border: 2px solid transparent; /* creates spacing between track and thumb */
+  background-clip: padding-box;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8); /* darker on hover */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3b82f6 transparent;
 }
